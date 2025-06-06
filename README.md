@@ -1,59 +1,109 @@
-# BackEndCode AMD Classification
+# Arabic Propaganda Detection
+
+This repository contains a machine learning model for detecting propaganda in Arabic text. The model uses AraBERT, a pre-trained Arabic language model, fine-tuned on a propaganda detection task.
 
 ## Overview
-This directory contains the backend implementation for Age-related Macular Degeneration (AMD) classification using a hybrid deep learning approach. The code implements a novel architecture that combines a Scale Adaptive (SA) model with transfer learning using ResNet50 to achieve high accuracy in AMD classification.
 
-## Technical Architecture
-- **Scale Adaptive Model**: Custom encoder model using MSE and MSLE loss functions
-- **Transfer Learning**: Integration with ResNet50 pre-trained on ImageNet
-- **Classification Layers**: Multi-layer neural network with batch normalization and dropout
-- **Input Shape**: 448x448x3 for the SA model, 224x224x3 for ResNet50
-- **Output**: 4-class classification (GA, Intermediate, Normal, Wet)
+Propaganda detection is a challenging NLP task that aims to identify manipulative text designed to influence opinions, attitudes, or behaviors. This project implements a binary classification approach to determine whether a given Arabic text paragraph contains propaganda (true) or not (false).
 
-## Implementation Details
-- **Model Building (01_model_building.ipynb)**:
-  - Custom loss functions: RMSE, SSIM, and hybrid MSE-MSLE loss
-  - Feature extraction using Scale Adaptive model + ResNet50
-  - Classification layers with dropout for regularization
-  - Global Average Pooling and Flattening for feature reduction
+## Dataset
 
-- **Training & Evaluation (02_model_training &Eval.ipynb)**:
-  - Dataset splitting (70% training, 15% validation, 15% testing)
-  - Data augmentation with horizontal/vertical flips and rotation
-  - SGD optimizer with learning rate of 0.001
-  - Categorical cross-entropy loss function
-  - Batch size of 64 with 10 epochs
+The project uses a combined dataset of Arabic text paragraphs with binary labels:
+- **true**: The paragraph contains propaganda
+- **false**: The paragraph does not contain propaganda
 
-- **Prediction (03_model_prediction.ipynb)**:
-  - Image preprocessing pipeline (resizing, normalization)
-  - Model loading and inference
-  - Classification into 4 AMD categories
+Dataset statistics:
+- Total samples: 8,000
+- Propaganda samples (true): 5,034 (62.9%)
+- Non-propaganda samples (false): 2,966 (37.1%)
+- Train/Validation/Test split: 6002/672/1326
 
-## Dependencies
-- TensorFlow 2.x
-- Keras
-- OpenCV
-- NumPy
-- Pandas
-- Scikit-image
-- TensorFlow Probability
-- Matplotlib
-- Seaborn
+## Preprocessing
 
-## Environment Setup
-1. Install Anaconda from https://www.anaconda.com/download
-2. Create environment using the provided YAML file:
-   ```
-   conda env create -f Requirments_capstone.yml
-   ```
-3. Activate the environment:
-   ```
-   conda activate capstone
-   ```
-4. Launch Jupyter Notebook:
-   ```
-   jupyter notebook
-   ```
+The text preprocessing pipeline includes:
+- Normalization of Arabic characters
+- Removal of diacritics
+- Removal of punctuation
+- Removal of non-Arabic letters
+- Removal of stopwords
+- Handling of repeating characters
 
-## Model Performance
-The hybrid architecture achieves 97% accuracy in classifying AMD stages, outperforming traditional CNN approaches through the combination of scale-adaptive features and transfer learning. 
+## Model
+
+The model uses a pre-trained AraBERT model ("Bmalmotairy/arabert-fully-supervised-arabic-propaganda") and fine-tunes it for the propaganda detection task.
+
+### Training
+
+- Batch size: 16
+- Epochs: 3
+- Optimizer: AdamW (default in Hugging Face Trainer)
+
+## Results
+
+The model achieves the following performance metrics on the test set:
+
+- Accuracy: 77.60%
+- Precision (Binary): 81.89%
+- Recall (Binary): 83.16%
+- F1-score (Binary): 82.52%
+- F1-score (Micro): 77.60%
+- F1-score (Macro): 75.68%
+
+## Requirements
+
+- Python 3.x
+- Torch
+- Transformers
+- NLTK
+- pandas
+- scikit-learn
+- BeautifulSoup
+- emoji
+
+## Usage
+
+The model can be used to detect propaganda in Arabic text by loading the fine-tuned model and tokenizer:
+
+```python
+from transformers import AutoTokenizer, AutoModelForSequenceClassification
+import torch
+
+# Load the model and tokenizer
+tokenizer = AutoTokenizer.from_pretrained("path_to_fine_tuned_model")
+model = AutoModelForSequenceClassification.from_pretrained("path_to_fine_tuned_model")
+
+# Preprocess and tokenize input text
+text = "Your Arabic text here"
+# Apply preprocessing if needed
+inputs = tokenizer(text, return_tensors="pt", truncation=True, padding=True)
+
+# Make prediction
+with torch.no_grad():
+    outputs = model(**inputs)
+    logits = outputs.logits
+    prediction = torch.argmax(logits, dim=1).item()
+
+print("Propaganda" if prediction == 1 else "Not propaganda")
+```
+
+## Future Work
+
+- Expand the dataset with more diverse examples
+- Experiment with different Arabic language models
+- Implement multi-class propaganda technique classification
+- Deploy the model as a web service
+
+## Citation
+
+If you use this model in your research, please cite:
+
+```
+@misc{arabic_propaganda_detection,
+  author = {Begolosamazaref},
+  title = {Arabic Propaganda Detection},
+  year = {2023},
+  publisher = {GitHub},
+  journal = {GitHub repository},
+  howpublished = {\url{https://github.com/Begolosamazaref/Propaganda-Detection}}
+}
+``` 
