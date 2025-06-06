@@ -43,19 +43,6 @@ The model uses a pre-trained AraBERT model ("Bmalmotairy/arabert-fully-supervise
 The model achieves the following performance metrics on the test set:
 
 - Accuracy: 77.60%
-- Precision (Binary): 81.89%
-- Recall (Binary): 83.16%
-- F1-score (Binary): 82.52%
-- F1-score (Micro): 77.60%
-- F1-score (Macro): 75.68%
-
-## Requirements
-
-- Python 3.x
-- Torch
-- Transformers
-- NLTK
-- pandas
-- scikit-learn
-- BeautifulSoup
-- emoji
+- Precision: 81.89%
+- Recall: 83.16%
+- F1-score: 82.52%
