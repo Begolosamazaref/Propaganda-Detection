@@ -106,4 +106,4 @@ If you use this model in your research, please cite:
   journal = {GitHub repository},
   howpublished = {\url{https://github.com/Begolosamazaref/Propaganda-Detection}}
 }
-``` 
+```
